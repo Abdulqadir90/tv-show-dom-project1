@@ -3,6 +3,11 @@
   background: white;
   position: sticky;
   top: 0;
+  box-shadow: 0px 0.8px 3px grey;
+}
+
+.note h1 {
+  font-size: 20px;
 }
 
 .display {
@@ -30,4 +35,17 @@
 .summary,
 .image {
   margin: 10px;
+}
+
+.displayCount {
+  font-size: 11px;
+  margin-left: 20px;
+  color: grey;
+}
+
+.searchBox {
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
 }
