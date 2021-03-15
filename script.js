@@ -1,10 +1,21 @@
-let showsArr = [];
+const shows = getAllShows();
+let showsArr = []; // array of episodes
 let selectOption = [];
 const search = document.querySelector('.search');
 const select = document.querySelector('.options');
+const selectShows = document.querySelector('.optionsshows');
+console.log(selectShows);
+shows.sort((a,b) =>  {
+  if (a.name[0] > b.name[0])
+   {        return 1;      }
+    else if (a.name[0] < b.name[0]) 
+    {        return -1;      }
+     else {        return 0;      }
+});
 
-const getShows = () => {
-  fetch(`https://api.tvmaze.com/shows/82/episodes`)
+const getShows = (id) => {
+  showsArr = [];
+  fetch(`https://api.tvmaze.com/shows/${id}/episodes`)
     .then((res) => res.json())
     .then((data) => {
       data.map((obj) => {
@@ -12,13 +23,15 @@ const getShows = () => {
           name: obj.name,
           season: obj.season,
           number: obj.number,
-          image: obj.image.medium,
+          image: obj.image?.medium,
           summary: obj.summary,
         };
         showsArr.push(objData);
       });
-      showsArr.length === 73 ? displayShows() : null;
+      // showsArr.length === 73 ? displayShows() : null;
+      displayShows()
     });
+    
 }
 
 
@@ -27,6 +40,9 @@ const episodeCode = (data, option) => data[option] < 10 ? `0${data[option]}`: `$
 const sortNumber = (data) => `S${episodeCode(data, "season")}E${episodeCode(data, "number")}`;
 
 const displayShows = () => {
+  select.innerHTML = "";
+  document.querySelector(".display").innerHTML = "";
+  document.querySelector(".options").innerHTML = `<option value="showAll">Show all</option>`
   document.querySelector(".display").innerHTML = showsArr
     .map((obj) => {
       options(obj);
@@ -41,6 +57,30 @@ const options = (data) => {
   optionSelected.innerHTML = `${sortNumber(data)} - ${data.name}`;
   select.appendChild(optionSelected);
 }
+
+const showOptions = (data) => {
+  let optionSelected = document.createElement('option');
+  optionSelected.value = `${data.id}`;
+  // console.log(optionSelected)
+  optionSelected.innerHTML = `${data.name}`;
+  // select.appendChild(optionSelected);
+  return optionSelected;
+}
+
+const displayAllShows = (showsArr) => {
+  console.log( document.querySelector(".optionsshows"))
+  let markUp = [];
+  const selector = document.querySelector(".optionsshows")
+  showsArr.forEach(element => {
+    markUp.push(showOptions(element))
+  });
+  markUp.forEach(element => selector.appendChild(element))
+  // selector.appendChild = markUp.join(" ")
+ 
+}
+
+displayAllShows(shows);
+
 
 const createShowCards = (data) => {
   return `
@@ -69,6 +109,18 @@ search.addEventListener('input', (e) => {
   }
 });
 
+const renderAllShows = (arr) => {
+  const markUp = [];
+  arr.forEach(data => {
+    markUp.push(`<div class="show">
+    <div class="title">${data.name}</div>
+    <img class="image" src="${data.image?.medium}">
+    <div class="summary">${data.summary}</div>
+  </div>`)
+  });
+  document.querySelector(".display").insertAdjacentHTML("afterbegin", markUp.join(""))
+}
+
 select.addEventListener('change', (e) => {
   document.querySelector('.display').innerHTML = showsArr.filter((obj) => {
     if (e.target.value.toLowerCase().includes(obj.name.toLowerCase())) {
@@ -80,4 +132,20 @@ select.addEventListener('change', (e) => {
   }).map(obj => createShowCards(obj)).join(" ");
 })
 
-getShows();
+selectShows.addEventListener('change', (e) => {
+  if(e.target.value === "showAll"){
+    renderAllShows(shows)
+    return
+  }
+  console.log(e.target.value);
+  getShows(+e.target.value)
+
+
+
+})
+
+renderAllShows(shows);
+
+
+
+// getShows(82);
