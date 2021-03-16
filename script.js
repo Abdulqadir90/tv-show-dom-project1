@@ -4,6 +4,9 @@ let selectOption = [];
 const search = document.querySelector('.search');
 const select = document.querySelector('.options');
 const selectShows = document.querySelector('.optionsshows');
+const display = document.querySelector('.display');
+const btnReturn = document.querySelector('.btnreturn');
+const searchShow = document.querySelector('.showsearch');
 console.log(selectShows);
 shows.sort((a,b) =>  {
   if (a.name[0] > b.name[0])
@@ -92,6 +95,26 @@ const createShowCards = (data) => {
   `
 }
 
+searchShow.addEventListener('input', (e) => {
+  if (shows.length > 0) {
+    let displaying = shows.filter((obj) => {
+      if (obj.name.toLowerCase().includes(e.target.value.toLowerCase()) || obj.summary.toLowerCase().includes(e.target.value.toLowerCase())) {
+        return obj;
+      }
+    });
+    if (e.target.value.length > 0) {
+      document.querySelector('.displayCount').innerHTML = `Displaying ${displaying.length}/${showsArr.length} episodes`;
+      document.querySelector('.display').innerHTML = "";
+      renderAllShows(displaying)
+    } else {
+      document.querySelector('.displayCount').innerHTML = '';
+     
+    }
+     console.log(displaying)
+    
+  }
+});
+
 search.addEventListener('input', (e) => {
   if (showsArr.length > 0) {
     let displaying = showsArr.filter((obj) => {
@@ -110,12 +133,20 @@ search.addEventListener('input', (e) => {
 });
 
 const renderAllShows = (arr) => {
+  search.classList.add("hiddenClass")
+  btnReturn.classList.add("hiddenClass")
+  selectShows.classList.remove("hiddenClass")
+  select.classList.add("hiddenClass")
   const markUp = [];
   arr.forEach(data => {
     markUp.push(`<div class="show">
-    <div class="title">${data.name}</div>
+    <div data-id=${data.id} class="title">${data.name}</div>
     <img class="image" src="${data.image?.medium}">
     <div class="summary">${data.summary}</div>
+    <p>${data.genres.join(" ")}</p>
+    <p>${data.status}</p>
+    <p>${data.rating.average}</p>
+    <p>${data.runtime}</p>
   </div>`)
   });
   document.querySelector(".display").insertAdjacentHTML("afterbegin", markUp.join(""))
@@ -133,14 +164,42 @@ select.addEventListener('change', (e) => {
 })
 
 selectShows.addEventListener('change', (e) => {
+  select.classList.remove("hiddenClass")
   if(e.target.value === "showAll"){
     renderAllShows(shows)
     return
   }
   console.log(e.target.value);
   getShows(+e.target.value)
+  btnReturn.classList.remove("hiddenClass")
+  // shows.classList.remove("hiddenClass")
 
 
+
+})
+
+display.addEventListener("click", (e) =>{
+if(!e.target.dataset.id) return 
+btnReturn.classList.remove("hiddenClass")
+const query = e.target.dataset.id 
+console.log("i am here")
+getShows(query)
+// shows.classList.remove("hiddenClass")
+btnReturn.classList.remove("hiddenClass")
+select.classList.remove("hiddenClass")
+shows.classList.remove("hiddenClass")
+search.classList.remove("hiddenClass")
+
+
+
+})
+
+btnReturn.addEventListener("click", (e) =>{
+console.log(e.target)
+renderAllShows(shows)
+shows.classList.add("hiddenClass")
+btnReturn.classList.add("hiddenClass")
+selectShows.classList.remove("hiddenClass")
 
 })
 
