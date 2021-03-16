@@ -43,6 +43,8 @@ const episodeCode = (data, option) => data[option] < 10 ? `0${data[option]}`: `$
 const sortNumber = (data) => `S${episodeCode(data, "season")}E${episodeCode(data, "number")}`;
 
 const displayShows = () => {
+  search.classList.remove('hiddenClass')
+  searchShow.classList.add('hiddenClass')
   select.innerHTML = "";
   document.querySelector(".display").innerHTML = "";
   document.querySelector(".options").innerHTML = `<option value="showAll">Show all</option>`
